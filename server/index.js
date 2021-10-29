@@ -2,28 +2,34 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const pool = require("./db");
+//const bodyParser = require('body-parser');
+//const jsonParser = bodyParser.json();
+//const urlencodedParser = bodyParser.urlencodedParser({ extended: false });
 
 //middlwware
 app.use(cors());
 app.use(express.json()); //req.body
+//app.use(bodyParser.json());
+//app.use(bodyParser.urlencoded( { extended: true }));
 
 //ROUTES//
 
 // //create a record
 
-// app.post("/records", async (req,res) => {
-//     try {
-//         const { description } = req.body;
-//         const newTodo = await pool.query(
-//             "INSERT INTO main (uuid, timestamp) VALUES($1, $2) RETURNING *",
-//             [description,]
-//         );
+app.post("/records", async (req,res) => {
+    try {
+        const { location, uuid, timestamp, gender, child, pregnantWoman } = req.body;
+        const newRecord = await pool.query(
+            "INSERT INTO main (location, uuid, timestamp, gender, child, pregnantwoman) VALUES($1, $2, $3, $4, $5, $6) RETURNING *",
+            [location, uuid, timestamp, gender, child, pregnantWoman]
+        );
     
-//         res.json(newTodo.rows[0]);
-//     } catch (err) {
-//         console.error(err.message);
-//     }
-// })
+        res.json(newRecord.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+    }
+})
+
 
 //get all record
 
@@ -37,7 +43,7 @@ app.get("/records", async (req,res) => {
 });
 
 
-//get a todo
+//get a record
 
 app.get("/records/:id", async (req,res) => {
     try {
@@ -49,7 +55,17 @@ app.get("/records/:id", async (req,res) => {
     }
 });
 
-//count records
+//count all records after date
+
+app.get("/records/count/:date", async (req,res) => {
+    try {
+        const { date } = req.params;
+        const record = await pool.query("SELECT COUNT(*) FROM main WHERE timestamp >= $1", [date]);
+        res.json(record.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
 
 
 app.listen(5000, () => {
