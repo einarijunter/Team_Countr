@@ -2,15 +2,11 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const pool = require("./db");
-//const bodyParser = require('body-parser');
-//const jsonParser = bodyParser.json();
-//const urlencodedParser = bodyParser.urlencodedParser({ extended: false });
+const spawn = require('child_process').spawn;
 
 //middlwware
 app.use(cors());
 app.use(express.json()); //req.body
-//app.use(bodyParser.json());
-//app.use(bodyParser.urlencoded( { extended: true }));
 
 //ROUTES//
 
@@ -66,6 +62,15 @@ app.get("/records/count/:date", async (req,res) => {
         console.error(err.message);
     }
 });
+
+// upon request to the launch path, launch the program
+app.get('/pushToCloud', async (req, res) => {
+
+    let child = spawn(
+        'python3',["./push_to_aws.py"]
+    );
+    res.send('');
+  });
 
 
 app.listen(5000, () => {
