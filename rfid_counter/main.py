@@ -17,10 +17,12 @@ def rand_binary(weight):
     else:
         return 0
 
+location = 'Detention Center Kenya - Nairobi'
+
 def pir(pin):
     api_url = 'http://192.168.28.15:5000/records/'
     genders = ['male', 'female']
-    location = 'Detention Center Libya'
+    global location
 
     new_uuid = uuid.uuid1()
     new_timestamp = datetime.now()
@@ -42,13 +44,14 @@ def pir(pin):
 
     r = requests.post(api_url, json=body)
 
-    print('{0} uuid added to database at time {1}'.format(new_uuid, new_timestamp))
+    print('Person counted at time {1}'.format(new_uuid, new_timestamp.strftime('%d.%m.%Y %H:%M:%S')))
 
     return True
 
 
 GPIO.add_event_detect(14, GPIO.FALLING, callback=pir, bouncetime=100)
 print("Welcome to Counter by Counter.IO!")
+print("Counting started in location: " + location)
 try:
         while True:
             time.sleep(0.001)
